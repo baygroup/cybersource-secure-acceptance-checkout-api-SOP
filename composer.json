@@ -1,0 +1,17 @@
+{
+    "name": "baygroup/cybersource-secure-acceptance-checkout-api-sop",
+    "description": "Cybersource checkout API for Silent Order POST (POST)PHP",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Bathulah Mahir",
+            "email": "tech@capitalbay.com.my"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Baygroup\\Cybersource\\": "src/"
+        }
+    }
+}
