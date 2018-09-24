@@ -8,7 +8,9 @@
             "email": "tech@capitalbay.com.my"
         }
     ],
-    "require": {},
+    "require": {
+        "curl/curl": "^1.9"
+    },
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
