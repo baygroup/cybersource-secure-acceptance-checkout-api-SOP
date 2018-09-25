@@ -14,6 +14,7 @@ class CybersourceSopApi
     protected $profile_id;
     protected $params;
     protected $credit_info;
+    protected $signature;
 
     public function __construct($access_key,$secret_key,$signature_method = 'sha256',$locale='en')
     {
@@ -51,7 +52,14 @@ class CybersourceSopApi
         $configArray = $this->generateConfigArray();
         $this->mergeParamsWithConfig($configArray);
         $data = $this->generateSignedValue($this->params);// array_map(array($this, 'generateSignedValue'), $this->params, array_keys($this->params));
+        $this->signature  =$this->sign($this->params);
+        $this->mergeWithSignature();
 
+    }
+
+    public function mergeWithSignature()
+    {
+        $this->params = array_merge($this->params,['signature' => $this->signature]);
     }
 
     public function mergeParamsWithProfileId(array $params)
@@ -69,12 +77,12 @@ class CybersourceSopApi
         $this->uniqid = uniqid();
         $this->sign_date_time = gmdate("Y-m-d\TH:i:s\Z");
         return
-        [
-            'access_key' => $this->access_key,
-            'transaction_uuid' => $this->uniqid,
-            'signed_date_time' => $this->sign_date_time,
-            'locale' => $this->locale
-        ];
+            [
+                'access_key' => $this->access_key,
+                'transaction_uuid' => $this->uniqid,
+                'signed_date_time' => $this->sign_date_time,
+                'locale' => $this->locale
+            ];
 
     }
 
@@ -111,6 +119,8 @@ class CybersourceSopApi
         $this->params = array_merge($this->params,['unsigned_field_names' => $this->unsigned_field_names]);
         //do merge credit info at the end of the params later
 
+        $this->params = array_merge($this->params,$this->credit_info);
+
 
         return $this->signed_field_names;
     }
@@ -118,17 +128,17 @@ class CybersourceSopApi
     public function generateUnsignedValue()
     {
         $this->unsigned_field_names = '';
-        
+
         foreach($this->credit_info as $index => $value)
         {
             $this->unsigned_field_names .= $index.',';
         }
-        
+
         $this->unsigned_field_names = substr($this->unsigned_field_names,0,-1);
-        
+
         return $this->unsigned_field_names;
     }
-    
+
     public function getUnsignedArray()
     {
         return $this->credit_info;
@@ -144,6 +154,6 @@ class CybersourceSopApi
         return implode(",",$dataToSign);
     }
 
-    
+
 
 }
