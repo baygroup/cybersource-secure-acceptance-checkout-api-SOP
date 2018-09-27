@@ -27,7 +27,7 @@ class CybersourceSopApi
 
     public function sign($params)
     {
-        return signData($this->buildDataToSign($params), $this->secret_key);
+        return $this->signData($this->buildDataToSign($params), $this->secret_key);
     }
 
     function signData($data, $secretKey)
@@ -46,7 +46,6 @@ class CybersourceSopApi
 
     public function pay($profile_id,array $params)
     {
-        $profile_id = 'C102A9BC-E1D5-425E-81AE-3603C2A8461B';
         $this->profile_id = $profile_id;
         $this->mergeParamsWithProfileId($params);
         $configArray = $this->generateConfigArray();
@@ -54,6 +53,7 @@ class CybersourceSopApi
         $data = $this->generateSignedValue($this->params);// array_map(array($this, 'generateSignedValue'), $this->params, array_keys($this->params));
         $this->signature  =$this->sign($this->params);
         $this->mergeWithSignature();
+        $this->submitForm();
 
     }
 
@@ -152,6 +152,39 @@ class CybersourceSopApi
     public function commaSeparate ($dataToSign)
     {
         return implode(",",$dataToSign);
+    }
+
+    public function generateParamHiddenInputFields()
+    {
+        $params = $this->params;
+        $hidden_field = '';
+        foreach($params as $name => $value) {
+            $hidden_field .= $name."<input type=\"hidden\" id=\"" . $name . "\" name=\"" . $name . "\" value=\"" . $value . "\"/>\n <br>";
+        }
+
+        return $hidden_field;
+    }
+
+    public function attachParamsWithDefaultUnsignedField()
+    {
+        array_merge($this->params,['unsigned_field_names' => 'card_type','card_number','card_expiry_date','card_cvn']);
+    }
+
+    public function submitForm()
+    {
+        $form = "<form method='POST' action='https://testsecureacceptance.cybersource.com/silent/pay' >";
+        $form .=  $this->generateParamHiddenInputFields();
+        $form .= "<button type='submit' style='display: none;' id='submit_payment'>Submit</button>";
+        $form .= "</form>";
+
+         $form .= "<br>";
+         $form .= "<script>";
+         $form .= "(function() {
+                 document.getElementById('submit_payment').click();
+             })();
+         ";
+         $form .= "</script>";
+        return $form;
     }
 
 
