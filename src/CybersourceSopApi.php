@@ -159,7 +159,7 @@ class CybersourceSopApi
         $params = $this->params;
         $hidden_field = '';
         foreach($params as $name => $value) {
-            $hidden_field .= $name."<input type=\"hidden\" id=\"" . $name . "\" name=\"" . $name . "\" value=\"" . $value . "\"/>\n <br>";
+            $hidden_field .= /*$name.*/"<input type=\"hidden\" id=\"" . $name . "\" name=\"" . $name . "\" value=\"" . $value . "\"/>\n <br>";
         }
 
         return $hidden_field;
@@ -177,13 +177,13 @@ class CybersourceSopApi
         $form .= "<button type='submit' style='display: none;' id='submit_payment'>Submit</button>";
         $form .= "</form>";
 
-         $form .= "<br>";
-         $form .= "<script>";
-         $form .= "(function() {
+        $form .= "<br>";
+        $form .= "<script>";
+        $form .= "(function() {
                  document.getElementById('submit_payment').click();
              })();
          ";
-         $form .= "</script>";
+        $form .= "</script>";
         return $form;
     }
 
